@@ -1,0 +1,93 @@
+<html>
+
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .bg {
+        background: url('images/1279_wolf.jpeg');
+        background-repeat: no-repeat;
+        background-position: top;
+        background-size: contain;
+        height: 500px;
+    }
+</style>
+
+<body style="background-color:rgb(216, 216, 216);">
+    <nav class="navbar navbar-inverse">
+        <!--Set this div up to be inserted to-->
+        <div class="container-fluid" id="day-bar">
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="container" style="background-color: ivory; padding: 12px; font-size: 16pt">
+        My name is Damien Moeller. BS of Computer Science with a passion for computing and gaming. Feel free to message me on any
+        of my accounts listed here.
+    </div>
+    <br>
+    <div class="container-fluid">
+        <!-- If Needed Left and Right Padding in 'md' and 'lg' screen means use container class -->
+        <div class="row">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <a href="mailto:dmoeller02@gmail.com">
+                    <img src="./images/gmaillogo.png" alt="dmoeller02@gmail.com" style="width:128;height:128;">
+                    <h3>Send an E-Mail</h3>
+                </a>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <a href="https://www.twitch.tv/daywolfy">
+                    <img src="./images/twitchlogo.png" alt="Twitch Link" style="width:128;height:128;">
+                    <h3>Check out my Twitch</h3>
+                </a>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <a href="https://twitter.com/wolf_omen">
+                    <img src="./images/Twitter.png" alt="Twitter Link" style="width:128;height:128;">
+                    <h3>Check out my Twitter</h3>
+                </a>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <a href="https://github.com/DamiDoge">
+                    <img src="./images/githublogo.png" alt="Github Link" style="width:128;height:128;">
+                    <h3>GitHub Repos</h3>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="./images/skypeicon.png" alt="Github Link" style="width:128;height:128;">
+                <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
+                <div id="SkypeButton_Call_dom.damien_1">
+                    <script type="text/javascript">
+                        Skype.ui({
+                            "name": "dropdown",
+                            "element": "SkypeButton_Call_dom.damien_1",
+                            "participants": ["dom.damien"],
+                            "imageSize": 32
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                <img src="./images/minelogo.png" alt="Minecraft Server at 66.69.150.51" style="width:128;height:128;">
+                <h3>Play Minecraft Server <br> IP: 66.69.150.51</h3>
+            </div>
+        </div>
+
+        <script src="./js/jquery-3.2.1.min.js"></script>
+        <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+        <script src="./bootstrap/js/bootstrap.min.js"></script>
+        <script>
+            //Grab the HTML and styling for the navbar from the appropriate file
+            function loadNav(callback) {
+                $("#day-bar").load("daybar.html");
+                callback();
+            }
+
+            function setActive() {
+                $("#homenav").addClass("active");
+            }
+
+            loadNav(setActive)
+        </script>
+</body>
+
+</html>

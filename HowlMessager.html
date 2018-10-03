@@ -1,0 +1,447 @@
+<html>
+
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/messages.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .modal-header,
+        h4,
+        .close {
+            background-color: darkblue;
+            color: rgb(226, 225, 225) !important;
+            text-align: center;
+            font-size: 30px;
+            border-color: darkgray;
+        }
+
+        .modal-dialog {
+            background-color: darkgray;
+            border-color: darkgray;
+        }
+
+        .modal-body {
+            background-color: darkgray;
+            border-color: darkgray;
+        }
+
+        .modal-footer {
+            background-color: darkgrey;
+            border-color: darkgray;
+        }
+
+        .bg {
+            background: url('images/wolf.jpg');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+
+<!--<body style="background-color:rgb(216, 216, 216);">-->
+
+<body style="background-color:rgb(216, 216, 216);">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid" id="day-bar">
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="container">
+        <div class="row">
+            <!-- Trigger the modal with a button -->
+            <div class="col-md-6"><button type="button" class="btn btn-primary btn-lg" id="myBtn">Login</button></div>
+            <div class="col-md-6"><button type="button" class="btn btn-secondary btn-lg" id="joinBtn">Join the Pack</button></div>
+        </div>
+
+        <!-- Login Modal -->
+        <div class="modal fade" id="loginModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 style="color:red;"><span class="glyphicon glyphicon-lock"></span> Login</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="loginform">
+                            <div class="form-group">
+                                <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+                                <input type="text" class="form-control" id="usrname" placeholder="Enter username">
+                            </div>
+                            <div class="form-group">
+                                <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+                                <input type="password" class="form-control" id="psw" placeholder="Enter password">
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="remember" value="" checked>Remember me</label>
+                            </div>
+                            <button type="submit" id="loginconfirm" class="btn btn-default btn-primary btn-block"><span class="glyphicon glyphicon-off"></span>
+                                Login</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>
+                            Cancel</button>
+                        <div class=t ext-center id="loginmessage"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Join Modal -->
+        <div class="modal fade" id="joinModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 style="color:red;"><span class="glyphicon glyphicon-lock"></span> Create Account</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="joinform">
+                            <div class="form-group">
+                                <label for="newusrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+                                <input type="text" class="form-control" id="newusrname" placeholder="Enter username">
+                            </div>
+                            <div class="newform-group">
+                                <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+                                <input type="password" class="form-control" id="newpsw" placeholder="Enter password">
+                            </div>
+                            <div class="checkbox">
+                                <label><input type="checkbox" id="newremember" value="" checked>Remember me</label>
+                            </div>
+                            <button type="submit" id="signupconfirm" class="btn btn-default btn-primary btn-block"><span
+                                    class="glyphicon glyphicon-off"></span>
+                                Join Pack</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-default btn-default pull-left" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span>
+                            Cancel</button>
+                        <div class=text-center id="joinmessage"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Div to hold chat boxes-->
+        <div class="container-fluid">
+            <div class="row" id="chatWindows">
+
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script>
+
+        var messageObjects = [];
+        var userList = [];
+        var currentUser = "";
+        var currentPassword = "";
+        var currentReciever = "";
+
+        //Checks if user credentials are correct using back-end built in authenication API.
+        //Reads all users in the database to populate chat options.
+        function authenticate(user, password) {
+            //Prepare data for AJAX request to back end.
+            var logindata = {
+                'username': user,
+                'password': password
+            };
+            //Send read users request to grab all other users in the database
+            $.ajax({
+                type: 'POST',
+                url: 'readUsers.php',
+                data: logindata,
+                success: function (result) {
+                    //If result holds the user then it will come back as a list.
+                    if ($.isArray(result)) {
+                        //Push all results into the user list.
+                        for (var i = 0; i < result.length; i++) {
+                            userList.push(result[i]["user"]);
+                        }
+                        //Save user data for future authentication tasks.
+                        currentUser = user;
+                        currentPassword = password;
+                        //Toggle off the login modal that the user took to log-in
+                        $("#loginModal").modal('toggle');
+                        //Remove buttons for logging in and creating account as user is now logged in.
+                        $("#myBtn").remove();
+                        $("#joinBtn").remove();
+                        //Grab the messages involving the logged in user.
+                        getMessages(user, password);
+                    }
+                    else {
+                        //Give user feedback from the back-end if the function fails.
+                        $("#loginmessage").text(result.message);
+                    }
+                }
+            })
+        }
+
+        //Adds user to the user database so they may use the messager.
+        function joinRequest(user, password) {
+            //Prepare user credentials for AJAX request.
+            var logindata = {
+                'name': user,
+                'password': password
+            };
+            $.ajax({
+                type: 'POST',
+                url: 'createUser.php',
+                data: logindata,
+                success: function (result) {
+                    //Make sure that the message sent back is not an error (indexOf returns -1 if "ERROR:" is not in the string).
+                    if (result.message.indexOf("ERROR:") == -1) {
+                        //Authenticate the new user so that they are logged in with their new account.
+                        authenticate(user, password);
+                        //Toggle off the join modal as the user is now joined.
+                        $("#joinModal").modal('toggle');
+                        //Toggle off the login modal as authenticate toggles it on.
+                        $("#loginModal").modal('toggle');
+                    }
+                    else {
+                        //Display Error message on the modal if user is not created.
+                        $("#joinmessage").text(result.message);
+                    }
+                }
+            })
+        }
+
+        //Populates the chat list with all meesages involving the current user.
+        function getMessages(user, password) {
+            //Prepare data for AJAX read messages request.
+            var logindata = {
+                'username': user,
+                'password': password
+            };
+            $.ajax({
+                type: 'POST',
+                url: 'readMessages.php',
+                data: logindata,
+                success: function (result) {
+                    //Result is an array of objects if the request succeeds.
+                    if ($.isArray(result)) {
+                        //Press all message objects into the message list.
+                        for (var i = 0; i < result.length; i++) {
+                            messageObjects.push(result[i]);
+                        }
+                        //Add messages as HTML to page for each user the current user can message.
+                        populatechats(user);
+                    }
+                    else {
+                        //Log error message for debug purposes if the request fails.
+                        console.log("Could not grab messages");
+                    }
+                    //Start countdown for polling to get newer messages.
+                    setTimeout(pollMessages(user, password), 1000);
+                }
+            })
+        }
+
+        //Send message data to messages database.
+        function sendMessage(user, password, message, reciever) {
+            //Prepare nessasary data for create message AJAX endpoint.
+            var logindata = {
+                'username': user,
+                'password': password,
+                'reciever': reciever,
+                'message': message
+            };
+            $.ajax({
+                type: 'POST',
+                url: 'createMessage.php',
+                data: logindata,
+                success: function (result) {
+                    //If the message is created then make sure it is updated on the page.
+                    pollMessages(currentUser, currentPassword);
+                },
+                error: function (error) {
+                    //Show error message if the request errors.
+                    console.log(error);
+                }
+            })
+        }
+        
+        //Formats date to a dateTime format that the back end can recognize.
+        function formatDate(date) {
+            var d = new Date,
+                dformat = [d.getMonth() + 1,
+                d.getDate(),
+                d.getFullYear()].join('-') + ' ' +
+                    [d.getHours(),
+                    d.getMinutes(),
+                    d.getSeconds()].join(':');
+            return dformat;
+        }
+
+        //Reads messages from the database and adds new messages to the list (needs update to be more efficient).
+        function pollMessages(user, password) {
+            //Prep data for AJAX read messages request.
+            var logindata = {
+                'username': user,
+                'password': password,
+            };
+            $.ajax({
+                type: 'POST',
+                url: 'readMessages.php',
+                data: logindata,
+                success: function (result) {
+                    //Result is only array if messages are returned.
+                    if ($.isArray(result)) {
+                        //Iterate through the messages returned.
+                        for (var i = 0; i < result.length; i++) {
+                            //Each message is assumed to be new and not a duplicate of an existing message
+                            var unique = true;
+                            //Iterate through the messages on the front end.
+                            for (var j = 0; j < messageObjects.length; j++) {
+                                //Each message has a unique ID identifier to compare. If the ID of a returned message and a site message match, then the returned message is a duplicate.
+                                if (result[i].ID == messageObjects[j].ID) {
+                                    //Mark this message returned as a dupicate
+                                    unique = false;
+                                }
+                            }
+                            if (unique == true) {
+                                //Add the returned message to the list if it is not a duplicate.
+                                messageObjects.push(result[i]);
+                                //Update the message to the site.
+                                updateMessage(result[i]);
+                            }
+                        };
+                    }
+                    else {
+                        console.log("Could not grab messages");
+                    }
+                    //Reset the timer to look for new messages in 5 seconds.
+                    setTimeout(pollMessages(user, password), 5000);
+                }
+            })
+        }
+
+        function populatechats(user) {
+            for (var i = 0; i < userList.length; i++) {
+                if (userList[i] != user) {
+                    $("#chatWindows").append('<div class="col-6" id="' + userList[i] + '"><h1>' + userList[i] + '</h1><div class="container" id=' + userList[i] + '_chatbox></div></div>');
+                }
+            }
+            for (var i = 0; i < messageObjects.length; i++) {
+                //Check if the message is outgoing
+                if (messageObjects[i].sender == currentUser) {
+                    $("#" + messageObjects[i].reciever + "_chatbox").append('<div class="chat_container"><p>' + messageObjects[i].message + '</p><span class="time-right">' + messageObjects[i].timestamp + '</span></div>')
+                }
+                //Check if the message is incoming
+                if (messageObjects[i].reciever == currentUser) {
+                    $("#" + messageObjects[i].sender + "_chatbox").append('<div class="chat_container darker"><p>' + messageObjects[i].message + '</p><span class="time-right">' + messageObjects[i].timestamp + '</span></div>')
+                }
+            }
+            for (var i = 0; i < userList.length; i++) {
+                if (userList[i] != user) {
+                    $('<form class="form-group row"><div class="form-group mx-sm-3 mb-2"><label for="inputMessage" class="sr-only">Message</label><input type="text" class="form-control" id="' + userList[i] + '_message" placeholder="Message"></div><button type="submit" class="btn btn-primary mb-2">Send</button></form>').appendTo("#" + userList[i]).submit(function (e) {
+                        domMessageID = $(this).parent().attr("id") + '_message';
+                        console.log($('#' + domMessageID).val());
+                        messageToSend = $('#' + domMessageID).val();
+                        sendMessage(currentUser, currentPassword, messageToSend, $(this).parent().attr("id"));
+                        e.preventDefault();
+                    })
+                }
+            }
+        }
+
+        $("#loginform").submit(function (e) {
+            var user = $("#usrname").val();
+            var password = $("#psw").val();
+            if ($("#remember").checked) {
+                setCookie("username", user, 7);
+                setCookie("password", password, 7);
+            }
+            authenticate(user, password);
+            e.preventDefault();
+        });
+
+        $("#joinform").submit(function (e) {
+            var user = $("#newusrname").val();
+            var password = $("#newpsw").val();
+            if ($("#remember").checked) {
+                setCookie("username", user, 7);
+                setCookie("password", password, 7);
+            }
+            joinRequest(user, password);
+            e.preventDefault();
+        });
+
+        function loadNav(callback) {
+            $("#day-bar").load("daybar.html");
+            callback();
+        }
+
+        function autoSignIn() {
+            var user = getCookie("username");
+            console.log(user);
+            var password = getCookie("password");
+            if (user != "" && password != "") {
+                authenticate(user, password);
+            }
+        }
+
+        function setActive() {
+            $("#twitchnav").addClass("active");
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var decodedCookie = decodeURIComponent(document.cookie);
+            var ca = decodedCookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        $(document).ready(autoSignIn);
+        $(document).ready(loadNav(setActive));
+
+        $(document).ready(function () {
+            $("#myBtn").click(function () {
+                $("#loginModal").modal();
+            });
+            $("#joinBtn").click(function () {
+                $("#joinModal").modal();
+            });
+        });
+
+        function updateMessage(message) {
+            console.log(message.sender);
+            //Check if the message is outgoing
+            if (message.sender == currentUser) {
+                $("#" + message.reciever + "_chatbox").append('<div class="chat_container"><p>' + message.message + '</p><span class="time-right">' + message.timestamp + '</span></div>');
+            }
+            //Check if the message is incoming
+            if (message.reciever == currentUser) {
+                $("#" + message.sender + "_chatbox").append('<div class="chat_container darker"><p>' + message.message + '</p><span class="time-right">' + message.timestamp + '</span></div>');
+            }
+        }
+
+    </script>
+</body>
+
+</html>

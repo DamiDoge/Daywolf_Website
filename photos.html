@@ -1,0 +1,63 @@
+<html>
+
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="./css/photos.css" rel="stylesheet">
+
+<style>
+    .bg {
+        background: url('images/1279_wolf.jpeg');
+        background-repeat: no-repeat;
+        background-position: top;
+        background-size: contain;
+        height: 500px;
+    }
+</style>
+
+<body style="background-color:rgb(216, 216, 216);">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid" id="day-bar">
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <section class="photos" id="photos">
+    </section>
+
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <script>
+        function loadNav(callback) {
+            $("#day-bar").load("daybar.html");
+            callback();
+        }
+
+        function setActive() {
+            $("#photosnav").addClass("active");
+        }
+
+        $(document).ready(loadNav(setActive));
+
+        function loadpics() 
+        {
+            var photosHTML = "";
+            $.ajax({
+                type: 'POST',
+                url: 'photo.php',
+                dataType: 'json',
+                success: function (result) {
+                    for (var i in result) {
+                        //Build the HTML first so that it loads the pics as simutaniously as possible.
+                        photosHTML = photosHTML.concat('<img src="./photos/' + result[i] + '">');
+                    };
+                    //Throw all the images into the HTML.
+                    $('#photos').append(photosHTML);
+                }
+            })
+        }
+
+        $(document).ready(loadpics());
+
+    </script>
+</body>
+
+</html>

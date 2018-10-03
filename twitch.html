@@ -1,0 +1,55 @@
+<html>
+
+<link href="./bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    .bg {
+        background: url('images/1279_wolf.jpeg');
+        background-repeat: no-repeat;
+        background-position: top;
+        background-size: contain;
+        height: 500px;
+    }
+</style>
+
+<body style="background-color:rgb(216, 216, 216);">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid" id="day-bar">
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+    <div class="container-fluid" id="twitchbox">
+
+    </div>
+
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./node_modules/popper.js/dist/umd/popper.js"></script>
+    <script src="./bootstrap/js/bootstrap.min.js"></script>
+    <!-- Load the Twitch embed script -->
+    <script src="https://embed.twitch.tv/embed/v1.js"></script>
+
+    <!-- Create a Twitch.Embed object that will render within the "twitch-embed" root element. -->
+    <script type="text/javascript">
+      new Twitch.Embed("twitchbox", {
+        theme: 'dark',
+        width: '100%',
+        height: '100%',
+        channel: "daywolfy"
+      });
+    </script>
+    <script>
+        function loadNav(callback) {
+            $("#day-bar").load("daybar.html");
+            callback();
+        }
+
+        function setActive() {
+            $("#twitchnav").addClass("active");
+        }
+
+        $(document).ready(loadNav(setActive));
+
+    </script>
+</body>
+
+</html>

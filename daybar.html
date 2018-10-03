@@ -1,0 +1,164 @@
+<link href="./css/slider.css" rel="stylesheet">
+<!-- Brand and toggle get grouped for better mobile display -->
+<div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+        aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+    </button>
+    <a href="." class="pull-left vertical-center">
+        <img src="./images/daywolflogo.png" style="width:50;height:50">
+    </a>
+    <a class="navbar-brand" href="."></a>
+    <a class="navbar-brand" href=".">DayWolf</a>
+</div>
+
+<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav">
+        <li id="homenav">
+            <a href=".">Home</a>
+        </li>
+        <li id="photosnav">
+            <a href="photos.html">Photos</a>
+        </li>
+        <li id="twitchnav">
+            <a href="twitch.html">Twitch Stream</a>
+        </li>
+        <li id="howler">
+            <a href="HowlMessager.html">Howler</a>
+        </li>
+        <li>
+            <a>
+                <div class="btn-group" role="group" aria-label="Music Player">
+                    <button id="skipback" type="button" class="btn btn-default" aria-label="Backbutton" onclick="back()">
+                        <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span>
+                    </button>
+                    <button id="play" type="button" class="btn btn-default" aria-label="Playbutton" onclick="play()">
+                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                    </button>
+                    <button id="pause" type="button" class="btn btn-default" aria-label="Pausebutton" onclick="pause()">
+                        <span class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+                    </button>
+                    <button id="skip" type="button" class="btn btn-default" aria-label="Skipbutton" onclick="skip()">
+                        <span class="glyphicon glyphicon-fast-forward" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a>
+                <span class="glyphicon " aria-hidden="true"></span>
+                <input type="range" min="0" max="100" value="100" class="slider vertical-center" id="volRange">
+            </a>
+        </li>
+        <li>
+            <a>
+                <audio style="height: 10px" id="audio"></audio>
+            </a>
+        </li>
+        <!--<li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">Action</a>
+                            </li>
+                            <li>
+                                <a href="#">Another action</a>
+                            </li>
+                            <li>
+                                <a href="#">Something else here</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a href="#">Separated link</a>
+                            </li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a href="#">One more separated link</a>
+                            </li>
+                        </ul>
+                    </li>-->
+    </ul>
+</div>
+
+<script>
+    var playlist = [];
+    //Flag to see if a playlist has already been loaded.
+    var loadflag = false;
+    var slider = document.getElementById("volRange");
+    var audio = document.getElementById("audio");
+
+    slider.oninput = function () {
+        audio.volume = slider.value / 100;
+        console.log(audio.volume);
+        console.log(slider.value);
+    }
+
+    function loadmusic() {
+        $.ajax({
+            type: 'POST',
+            url: 'music.php',
+            dataType: 'json',
+            success: function (result) {
+                console.log(result);
+                $('#audio').html('<source src="./music/' + result + '">');
+                playlist.push(result);
+                var audio = document.getElementById("audio");
+                audio.load();
+                if (loadflag == true) {
+                    audio.play();
+                }
+                else {
+                    loadflag = true;
+                }
+            }
+        })
+    }
+
+    $(document).ready(loadmusic());
+
+    function skip() {
+        loadmusic();
+    }
+
+
+    function back() {
+        if (playlist.length > 0) {
+            playlist.pop();
+            if (playlist.length > 0) {
+                $('#audio').html('<source src="./music/' + playlist[playlist.length - 1] + '">');
+                load();
+            }
+            else {
+                loadmusic();
+            }
+        }
+        else {
+            loadmusic();
+        }
+    }
+
+    function play() {
+        var audio = document.getElementById("audio");
+        audio.play();
+    }
+
+    function load() {
+        var audio = document.getElementById("audio");
+        audio.load();
+        audio.play();
+    }
+
+    function pause() {
+        var audio = document.getElementById("audio");
+        audio.pause();
+    }
+
+    var music = document.getElementById("audio");
+    music.onended = function () { skip() };
+</script>
+<!-- /.navbar-collapse -->
